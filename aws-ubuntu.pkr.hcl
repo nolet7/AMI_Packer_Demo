@@ -1,31 +1,56 @@
 packer {
   required_plugins {
     amazon = {
-      version = ">= 1.2.8"
+      version = ">= 1.3.6"
       source  = "github.com/hashicorp/amazon"
     }
   }
 }
 
 source "amazon-ebs" "ubuntu" {
-  ami_name      = "learn-packer-linux-aws-ubuntutest"
-  instance_type = "t2.micro"
-  region        = "us-east-1"
+  ami_name      = var.ami_name
+  instance_type = var.instance_type
+  region        = var.region
+  ami_regions   = ["us-east-1", "us-west-2", "eu-central-1"]
+
   source_ami_filter {
-    filters = {
-      name                = "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"
-      root-device-type    = "ebs"
-      virtualization-type = "hvm"
-    }
+    filters = var.ami_filters
     most_recent = true
-    owners      = ["099720109477"]
+    owners      = var.ami_owners
   }
-  ssh_username = "ubuntu"
-}
-build {
-  name = "learn-packer"
-  sources = [
-    "source.amazon-ebs.ubuntu"
-  ]
+
+  ssh_username = var.ssh_username
+
+  tags = {
+    "Name"        = "MyUbuntuImage"
+    "Environment" = "Production"
+    "OS_Version"  = "Ubuntu 22.04"
+    "Release"     = "Latest"
+    "Created-by"  = "Packer"
+  }
 }
 
+build {
+  name    = "learn-packer"
+  sources = ["source.amazon-ebs.ubuntu"]
+
+  provisioner "shell" {
+    inline = [
+      "echo Installing Updates",
+      "sudo apt-get update",
+      "sudo apt-get upgrade -y",
+      "sudo apt-get install -y nginx"
+    ]
+  }
+
+  provisioner "file" {
+    source      = "assets"
+    destination = "/tmp/"
+  }
+
+  provisioner "shell" {
+    inline = [
+      "sudo sh /tmp/assets/setup-web.sh",
+    ]
+  }
+}

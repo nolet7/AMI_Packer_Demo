@@ -1,0 +1,42 @@
+name: Packer Build
+
+on:
+  push:
+    branches:
+      - feature/packer-provisioners
+  pull_request:
+    branches:
+      - feature/packer-provisioners
+
+jobs:
+  packer:
+    runs-on: ubuntu-latest
+
+    env:
+      PACKER_GITHUB_API_TOKEN: ${{ secrets.PACKER_GITHUB_API_TOKEN }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Packer
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y unzip
+          curl -fsSL -o packer.zip https://releases.hashicorp.com/packer/1.8.4/packer_1.8.4_linux_amd64.zip
+          unzip packer.zip
+          sudo mv packer /usr/local/bin/
+          packer --version
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-east-1"
+
+      - name: Run Packer Build
+        run: |
+          packer init aws-ubuntu.pkr.hcl
+          packer validate aws-ubuntu.pkr.hcl
+          packer build aws-ubuntu.pkr.hcl
