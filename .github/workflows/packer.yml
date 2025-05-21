@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Packer Build
         env:
-          PACKER_GITHUB_API_TOKEN: ${{ secrets.PACKER_GITHUB_API_TOKEN: ${{ secrets.PACKER_GITHUB_API_TOKEN }}
+          PACKER_GITHUB_API_TOKEN: ${{ secrets.PACKER_GITHUB_API_TOKEN }}
         
         run: |
           packer init aws-ubuntu.pkr.hcl
