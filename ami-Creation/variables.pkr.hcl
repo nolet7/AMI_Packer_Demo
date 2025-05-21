@@ -31,3 +31,29 @@ variable "ssh_username" {
   type    = string
   default = "ubuntu"
 }
+
+variable "ami_regions" {
+  type    = list(string)
+  default = ["us-east-1", "us-west-2", "eu-central-1"]
+}
+
+variable "ami_tags" {
+  type = map(string)
+  default = {
+    Name        = "MyUbuntuImage"
+    Environment = "Production"
+    OS_Version  = "Ubuntu 22.04"
+    Release     = "Latest"
+    Created_by  = "Packer"
+  }
+}
+
+variable "security_group" {
+  type    = string
+  default = "sg-xxxxxxxx"
+}
+
+variable "subnet_id" {
+  type    = string
+  default = "subnet-xxxxxxxx"
+}

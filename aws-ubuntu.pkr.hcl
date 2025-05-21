@@ -14,7 +14,7 @@ source "amazon-ebs" "ubuntu" {
   ami_regions   = ["us-east-1", "us-west-2", "eu-central-1"]
 
   source_ami_filter {
-    filters = var.ami_filters
+    filters     = var.ami_filters
     most_recent = true
     owners      = var.ami_owners
   }

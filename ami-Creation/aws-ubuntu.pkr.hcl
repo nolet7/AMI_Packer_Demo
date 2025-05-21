@@ -11,23 +11,17 @@ source "amazon-ebs" "ubuntu" {
   ami_name      = var.ami_name
   instance_type = var.instance_type
   region        = var.region
-  ami_regions   = ["us-east-1", "us-west-2", "eu-central-1"]
+  ami_regions   = var.ami_regions
 
   source_ami_filter {
-    filters = var.ami_filters
+    filters     = var.ami_filters
     most_recent = true
     owners      = var.ami_owners
   }
 
   ssh_username = var.ssh_username
 
-  tags = {
-    "Name"        = "MyUbuntuImage"
-    "Environment" = "Production"
-    "OS_Version"  = "Ubuntu 22.04"
-    "Release"     = "Latest"
-    "Created-by"  = "Packer"
-  }
+  tags = var.ami_tags
 }
 
 build {
@@ -50,7 +44,7 @@ build {
 
   provisioner "shell" {
     inline = [
-      "sudo sh /tmp/assets/setup-web.sh",
+      "sudo sh /tmp/assets/setup-web.sh"
     ]
   }
 }
