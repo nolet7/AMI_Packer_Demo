@@ -10,7 +10,7 @@ variable "instance_type" {
 
 variable "region" {
   type    = string
-  default = "ap-southeast-2"
+  default = "us-east-1"
 }
 
 variable "ami_filters" {
